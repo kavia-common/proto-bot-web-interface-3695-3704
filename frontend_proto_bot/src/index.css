@@ -36,3 +36,18 @@
     @apply bg-secondary text-black hover:bg-amber-500;
   }
 }
+
+/* Optional small utilities used in chat */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.4); /* slate-500/40 */
+    border-radius: 9999px;
+  }
+}

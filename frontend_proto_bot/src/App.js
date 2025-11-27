@@ -1,23 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
+import Chat from './pages/Chat';
 
 /**
- * NavBar with brand, simple links and a dark mode toggle.
+ * NavBar with brand, simple links, a Chat link, and a dark mode toggle.
  */
 // PUBLIC_INTERFACE
-function NavBar({ theme, onToggleTheme }) {
-  /** NavBar for Proto Bot site header. */
+function NavBar({ theme, onToggleTheme, currentView, onNavigate }) {
+  /** NavBar for Proto Bot site header with Chat entry point. */
+  const linkBase =
+    'text-sm text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors';
+  const active =
+    'text-primary dark:text-primary font-semibold';
+
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-surface/80 dark:bg-neutral-900/80 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold shadow-sm">P</div>
-          <span className="text-lg font-semibold text-textcolor dark:text-white">Proto Bot</span>
+          <button
+            className="text-lg font-semibold text-textcolor dark:text-white"
+            onClick={() => onNavigate('home')}
+            aria-label="Go to Home"
+          >
+            Proto Bot
+          </button>
         </div>
         <div className="hidden md:flex items-center gap-6">
-          <a href="#features" className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">Features</a>
-          <a href="#about" className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">About</a>
-          <a href="#contact" className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">Contact</a>
+          <button onClick={() => onNavigate('home')} className={`${linkBase} ${currentView === 'home' ? active : ''}`}>Home</button>
+          <button onClick={() => onNavigate('chat')} className={`${linkBase} ${currentView === 'chat' ? active : ''}`}>Chat</button>
+          <a href="#features" className={linkBase}>Features</a>
+          <a href="#about" className={linkBase}>About</a>
+          <a href="#contact" className={linkBase}>Contact</a>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -38,7 +52,7 @@ function NavBar({ theme, onToggleTheme }) {
  * Hero section for the home page with CTA buttons.
  */
 // PUBLIC_INTERFACE
-function HomeHero() {
+function HomeHero({ onNavigate }) {
   /** Centered hero with gradient background and CTAs. */
   return (
     <section className="pt-24 sm:pt-28">
@@ -53,12 +67,12 @@ function HomeHero() {
               A lightweight React + Tailwind starter featuring an Ocean Professional theme, ready for rapid prototyping.
             </p>
             <div className="mt-8 flex items-center justify-center gap-4">
-              <a
-                href="#get-started"
+              <button
+                onClick={() => onNavigate('chat')}
                 className="btn btn-primary shadow-sm"
               >
-                Get Started
-              </a>
+                Open Chat
+              </button>
               <a
                 href="#learn-more"
                 className="btn btn-secondary"
@@ -95,12 +109,13 @@ function Footer() {
 }
 
 /**
- * Main App composing NavBar, HomeHero and Footer.
+ * Main App composing NavBar, HomeHero, Chat and Footer with simple in-app view state.
  */
 // PUBLIC_INTERFACE
 function App() {
-  /** Main app with theme toggling using document.documentElement.classList. */
+  /** Main app with theme toggling and lightweight client-side 'routing' via local state. */
   const [theme, setTheme] = useState('light');
+  const [view, setView] = useState('home'); // 'home' | 'chat'
 
   useEffect(() => {
     const root = document.documentElement;
@@ -113,11 +128,14 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
 
+  const onNavigate = (next) => setView(next);
+
   return (
     <div className="min-h-screen flex flex-col bg-background dark:bg-neutral-950">
-      <NavBar theme={theme} onToggleTheme={toggleTheme} />
+      <NavBar theme={theme} onToggleTheme={toggleTheme} currentView={view} onNavigate={onNavigate} />
       <main className="flex-1">
-        <HomeHero />
+        {view === 'home' && <HomeHero onNavigate={onNavigate} />}
+        {view === 'chat' && <Chat />}
       </main>
       <Footer />
     </div>
